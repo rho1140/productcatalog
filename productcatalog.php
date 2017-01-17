@@ -1,6 +1,12 @@
 <!DOCTYPE HTML>  
-<html>
+<html lang="en">
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Product Catalog</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
 </head>
 <body>  
 
@@ -24,13 +30,8 @@ $context = stream_context_create($opts);
 $file = file_get_contents($remote_url, false, $context);
 
 
-echo "<h2>Product Catalog from foxguard.net</h2>";
-
-
-//Raw data 
-/*
-print($file);
-*/
+echo "<h1>Product Catalog from foxguard.net</h1>";
+echo "<br>";
 
 
 //Find a string between 2 strings 
@@ -52,7 +53,8 @@ function getContents($str, $startDelimiter, $endDelimiter) {
   return $contents;
 }
 
-//Arrays of the product names, prices, skus and urls merged into one array 
+
+//Arrays of the product names, prices, skus and urls 
 $productnames = ( getContents($file, "\"name\":\"", "\",\"") );
 
 $productprices = ( getContents($file, "\"price\":\"", "\",\"") );
@@ -61,31 +63,35 @@ $productskus = ( getContents($file, "\"sku\":\"", "\",\"") );
 
 $producturls = ( getContents($file, "\"custom_url\":\"", "\",\"") );
 
-$productdata = array_merge($productnames, $productprices, $productskus, $producturls);
+$imageexist = ( getContents($file, "\"primary_image\":{\"id\":", "}}") );
 
-$ini = count($productdata);
-$end = $ini /= 4;
+$end = count($productnames);
 $start = 0;
 
-function scanarray($productnames, $productskus, $productprices, $producturls, $start, $end) {
+//Print out the content from the arrays and insert a place holder image if no image exist
+function scantext($productnames, $productskus, $productprices, $producturls, $imageexist, $start, $end) {
 	while($start < $end) {
 		$productname = $productnames[$start];
+		$productname = stripslashes($productname);
 		$sku = $productskus[$start];
 		$price = $productprices[$start];
+		$price = substr_replace($price, "", -2);
 		$url = $producturls[$start];
 		$url = stripslashes($url);
-		print "Name: <a href=\"http://www.foxguard.net$url\">$productname</a> SKU: $sku Price: $price $url <br>";
-		$start  = $start  + 1;
+		if ($imageexist[$start] == "0") {
+			print "<img src=\"/images/noimage.jpg\"> ";
+		} else {
+			$productimages = getContents($imageexist[$start], "\"thumbnail_url\":\"", "\",\"");
+			$productimages = $productimages[0];
+			$productimages = stripslashes($productimages);
+			print "<img src=\"$productimages\"> ";	
+		}
+		print "<a href=\"http://www.foxguard.net$url\">$productname</a>  /  $sku /  $price<br>";
+		$start = $start  + 1;
 	}
 }
 
-
-echo scanarray($productnames, $productskus, $productprices, $producturls, $start, $end);
-
-
+echo scantext($productnames, $productskus, $productprices, $producturls, $imageexist, $start, $end);
 ?>
 </body>
 </html>
-
-
-
