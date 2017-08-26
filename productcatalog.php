@@ -12,8 +12,8 @@
 
 <?php
 
-$username = "api_username";
-$password = "api_password";
+$username = "bc_api_username";
+$password = "password";
 $remote_url = 'https://store-njwk9edm.mybigcommerce.com/api/v2/products.json?include=name,sku,price,custom_url';
 
 // Create a stream
@@ -65,10 +65,10 @@ $producturls = ( getContents($file, "\"custom_url\":\"", "\",\"") );
 
 $imageexist = ( getContents($file, "\"primary_image\":{\"id\":", "}}") );
 
+
 $end = count($productnames);
 $start = 0;
 
-//Print out the content from the arrays and insert a place holder image if no image exist
 function scantext($productnames, $productskus, $productprices, $producturls, $imageexist, $start, $end) {
 	while($start < $end) {
 		$productname = $productnames[$start];
@@ -91,7 +91,9 @@ function scantext($productnames, $productskus, $productprices, $producturls, $im
 	}
 }
 
+
 echo scantext($productnames, $productskus, $productprices, $producturls, $imageexist, $start, $end);
+
 ?>
 </body>
 </html>
