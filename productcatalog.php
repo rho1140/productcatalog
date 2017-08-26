@@ -12,8 +12,8 @@
 
 <?php
 
-$username = "lucian";
-$password = "6b02cfb11c15b43b564106e3debccfcf1b41a625";
+$username = "api_username";
+$password = "api_password";
 $remote_url = 'https://store-njwk9edm.mybigcommerce.com/api/v2/products.json?include=name,sku,price,custom_url';
 
 // Create a stream
